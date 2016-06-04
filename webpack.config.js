@@ -52,14 +52,13 @@ if ( TARGET_ENV === 'development' ) {
   module.exports = merge( commonConfig, {
 
     entry: [
-      'webpack-dev-server/client?http://localhost:3000',
+      'webpack-hot-middleware/client',
       path.join( __dirname, 'client/index.js' )
     ],
-
-    devServer: {
-      inline:   true,
-      progress: true
-    },
+    
+    plugins: [
+      new webpack.HotModuleReplacementPlugin()
+    ],
 
     module: {
       loaders: [

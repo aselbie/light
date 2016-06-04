@@ -2,7 +2,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.App as Html
 import Html.Events exposing ( onClick )
-import WebSocket
+-- import WebSocket
 
 -- component import example
 import Components.Hello exposing ( hello )
@@ -52,7 +52,7 @@ view model =
           , p [] [ text ( "Elm Webpack Starter" ) ]
           , button [ class "btn btn-primary btn-lg", onClick Increment ] [                  -- click handler
             span[ class "glyphicon glyphicon-star" ][]                                      -- glyphicon
-            , span[][ text "FTW!" ]
+            , span[][ text "Thing!" ]
           ]
         ]
       ]
