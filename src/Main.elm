@@ -2,6 +2,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.App as Html
 import Html.Events exposing ( onClick )
+import WebSocket
 
 -- component import example
 import Components.Hello exposing ( hello )
@@ -18,6 +19,13 @@ type alias Model = Int
 
 model : number
 model = 0
+
+-- SUBSCRIPTIONS
+
+
+-- subscriptions : Model -> Sub Msg
+-- subscriptions model =
+--   WebSocket.listen "localhost:8080" NewMessage
 
 
 -- UPDATE
