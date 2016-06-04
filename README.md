@@ -32,7 +32,7 @@ elm package install
 npm start
 ```
 * Access app at `http://localhost:8080/`
-* Get coding! The entry point file is `src/Main.elm`
+* Get coding! The entry point file is `client/Main.elm`
 * Browser will refresh automatically on any file changes..
 
 
