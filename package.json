@@ -9,7 +9,7 @@
     "url": "https://github.com/moarwick/elm-webpack-starter"
   },
   "scripts": {
-    "start": "babel-node server/server.js --presets es2015,stage-0",
+    "start": "pm2 start process.json",
     "build": "rimraf dist && webpack && cp -r client/img/ dist/img/ && cp client/favicon.ico dist/favicon.ico",
     "watch": "webpack --watch"
   },
