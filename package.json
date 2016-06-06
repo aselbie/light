@@ -44,6 +44,7 @@
     "koa-convert": "^1.2.0",
     "koa-socket": "^4.4.0",
     "koa-static": "^2.0.0",
-    "rethinkdbdash": "^2.3.6"
+    "rethinkdbdash": "^2.3.6",
+    "ws": "^1.1.0"
   }
 }

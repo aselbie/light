@@ -1,71 +1,74 @@
 import Html exposing (..)
-import Html.Attributes exposing (..)
 import Html.App as Html
-import Html.Events exposing ( onClick )
--- import WebSocket
-
--- component import example
-import Components.Hello exposing ( hello )
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import WebSocket
 
 
--- APP
 main : Program Never
 main =
-  Html.beginnerProgram { model = model, view = view, update = update }
+  Html.program
+    { init = init
+    , view = view
+    , update = update
+    , subscriptions = subscriptions
+    }
+
+
+echoServer : String
+echoServer =
+  "ws://localhost:3000"
 
 
 -- MODEL
-type alias Model = Int
-
-model : number
-model = 0
-
--- SUBSCRIPTIONS
+type alias Model =
+  { input : String
+  , messages : List String
+  }
 
 
--- subscriptions : Model -> Sub Msg
--- subscriptions model =
---   WebSocket.listen "localhost:8080" NewMessage
+init : (Model, Cmd Msg)
+init =
+  (Model "" [], Cmd.none)
 
 
 -- UPDATE
-type Msg = NoOp | Increment
+type Msg
+  = Input String
+  | Send
+  | NewMessage String
 
-update : Msg -> Model -> Model
-update msg model =
+
+update : Msg -> Model -> (Model, Cmd Msg)
+update msg {input, messages} =
   case msg of
-    NoOp -> model
-    Increment -> model + 1
+    Input newInput ->
+      (Model newInput messages, Cmd.none)
+
+    Send ->
+      (Model "" messages, WebSocket.send echoServer input)
+
+    NewMessage str ->
+      (Model input (str :: messages), Cmd.none)
+
+
+-- SUBSCRIPTIONS
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  WebSocket.listen echoServer NewMessage
+
 
 
 -- VIEW
--- Html is defined as: elem [ attribs ][ children ]
--- CSS can be applied via class names or inline style attrib
 view : Model -> Html Msg
 view model =
-  div [ class "container", style [("margin-top", "30px"), ( "text-align", "center" )] ][    -- inline CSS (literal)
-    div [ class "row" ][
-      div [ class "col-xs-12" ][
-        div [ class "jumbotron" ][
-          img [ src "img/elm.jpg", style styles.img ] []                                    -- inline CSS (via var)
-          , hello model                                                                     -- ext 'hello' component (takes 'model' as arg)
-          , p [] [ text ( "Elm Webpack Starter" ) ]
-          , button [ class "btn btn-primary btn-lg", onClick Increment ] [                  -- click handler
-            span[ class "glyphicon glyphicon-star" ][]                                      -- glyphicon
-            , span[][ text "Thing!" ]
-          ]
-        ]
-      ]
+  div []
+    [ input [onInput Input, value model.input] []
+    , button [onClick Send] [text "Send"]
+    , div [] (List.map viewMessage (List.reverse model.messages))
     ]
-  ]
 
 
--- CSS STYLES
-styles : { img : List ( String, String ) }
-styles =
-  {
-    img =
-      [ ( "width", "33%" )
-      , ( "border", "4px solid #337AB7")
-      ]
-  }
+viewMessage : String -> Html msg
+viewMessage msg =
+  div [] [ text msg ]
