@@ -11,5 +11,8 @@
     "env_production" : {
        "NODE_ENV": "production"
     }
+  },
+  {
+    "script": "rethinkdb"
   }]
 }
