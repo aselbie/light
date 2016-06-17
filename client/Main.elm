@@ -95,9 +95,13 @@ yIs : Int -> Tile -> Bool
 yIs y tile = 
   tile.y == y
 
+compareX : Tile -> Tile -> Order
+compareX a b =
+  compare a.x b.x
+
 getRow : List Tile -> Int -> List Tile
 getRow tiles rowNum =
-  List.filter (yIs rowNum) tiles
+  List.sortWith compareX (List.filter (yIs rowNum) tiles)
 
 getRows : List Tile -> List (List Tile)
 getRows tiles =
