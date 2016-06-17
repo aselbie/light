@@ -1,6 +1,6 @@
 import Html exposing (..)
 import Html.App as Html
--- import Html.Attributes exposing (..)
+import Html.Attributes exposing (..)
 -- import Html.Events exposing (..)
 import WebSocket
 import Json.Decode exposing (Decoder, decodeString, string, int, bool, list, (:=), object4)
@@ -59,7 +59,7 @@ tileDecoder =
 
 tilesDecoder : Decoder (List Tile)
 tilesDecoder =
-  list tileDecoder
+  Json.Decode.list tileDecoder
 
 nullTile : Tile
 nullTile =
@@ -91,11 +91,32 @@ subscriptions model =
 
 
 -- VIEW
+yIs : Int -> Tile -> Bool
+yIs y tile = 
+  tile.y == y
+
+getRow : List Tile -> Int -> List Tile
+getRow tiles rowNum =
+  List.filter (yIs rowNum) tiles
+
+getRows : List Tile -> List (List Tile)
+getRows tiles =
+  List.map (getRow tiles) [0..9]
+
 view : Model -> Html Msg
 view model =
-  div [] (List.map viewTile model.tiles)
+  table [] (List.map viewRow (getRows model.tiles))
 
+viewRow : List Tile -> Html msg
+viewRow row =
+  tr [] (List.map viewTile row)
+
+tileStyle : Attribute msg
+tileStyle =
+  style
+    [ ("padding", "4px")
+    ]
 
 viewTile : Tile -> Html msg
 viewTile tile =
-  div [] [ text tile.id ]
+  td [tileStyle] [ text tile.id ]
