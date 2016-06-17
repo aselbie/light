@@ -44,17 +44,13 @@ const server = app.listen( process.env.PORT || 3000 )
 const wss = new Server({ server })
 
 wss.on('connection', function connection(ws) {
-  ws.send(JSON.stringify({
-    name: 'something'
-  }))
-
   ws.on('message', function incoming(message) {
     console.log('received: %s', message);
   });
 
-  // grid.run( (err, result) => {
-  //   if (err) throw err
+  grid.run( (err, result) => {
+    if (err) throw err
     
-  //   ws.send( 'grid' )
-  // })
+    ws.send(JSON.stringify(result))
+  })
 });

@@ -1,9 +1,9 @@
 import Html exposing (..)
 import Html.App as Html
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+-- import Html.Attributes exposing (..)
+-- import Html.Events exposing (..)
 import WebSocket
-import Json.Decode exposing (Decoder, decodeString, string, (:=), object1)
+import Json.Decode exposing (Decoder, decodeString, string, int, bool, list, (:=), object4)
 
 
 main : Program Never
@@ -24,7 +24,7 @@ echoServer =
 -- MODEL
 type alias Model =
   { input : String
-  , messages : List Person
+  , tiles : List Tile
   }
 
 
@@ -34,11 +34,12 @@ type Msg
   | NewMessage String
 
 
-type alias Person =
-    { name : String
-    -- , age : Int
-    -- , profession : Maybe String
-    }
+type alias Tile =
+  { id : String
+  , x : Int
+  , y : Int
+  , filled : Bool
+  }
 
 
 init : (Model, Cmd Msg)
@@ -48,32 +49,39 @@ init =
 
 -- UPDATE
 
-person : Decoder Person
-person =
-    object1 Person
-      ("name" := string)
+tileDecoder : Decoder Tile
+tileDecoder =
+  object4 Tile
+    ("id" := string)
+    ("x" := int)
+    ("y" := int)
+    ("filled" := bool)
 
-nullPerson : Person
-nullPerson =
-  { name = "I have no nome" }
+tilesDecoder : Decoder (List Tile)
+tilesDecoder =
+  list tileDecoder
 
-decode : String -> Person
-decode str =
-  case decodeString person str of
+nullTile : Tile
+nullTile =
+  { id = "0.0", x = 0, y = 0, filled = False }
+
+decodeTiles : String -> List Tile
+decodeTiles str =
+  case decodeString tilesDecoder str of
     Ok val -> val
-    Err message -> nullPerson
+    Err message -> [nullTile]
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg {input, messages} =
+update msg {input, tiles} =
   case msg of
     Input newInput ->
-      (Model newInput messages, Cmd.none)
+      (Model newInput tiles, Cmd.none)
 
     Send ->
-      (Model "" messages, WebSocket.send echoServer input)
+      (Model "" tiles, WebSocket.send echoServer input)
 
     NewMessage str ->
-      (Model input (decode(str) :: messages), Cmd.none)
+      (Model input (decodeTiles(str)), Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -82,17 +90,12 @@ subscriptions model =
   WebSocket.listen echoServer NewMessage
 
 
-
 -- VIEW
 view : Model -> Html Msg
 view model =
-  div []
-    [ input [onInput Input, value model.input] []
-    , button [onClick Send] [text "Send"]
-    , div [] (List.map viewMessage (List.reverse model.messages))
-    ]
+  div [] (List.map viewTile model.tiles)
 
 
-viewMessage : Person -> Html msg
-viewMessage msg =
-  div [] [ text msg.name ]
+viewTile : Tile -> Html msg
+viewTile tile =
+  div [] [ text tile.id ]
