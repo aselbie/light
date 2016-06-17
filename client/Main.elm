@@ -3,6 +3,7 @@ import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import WebSocket
+import Json.Decode exposing (Decoder, decodeString, string, (:=), object1)
 
 
 main : Program Never
@@ -23,8 +24,21 @@ echoServer =
 -- MODEL
 type alias Model =
   { input : String
-  , messages : List String
+  , messages : List Person
   }
+
+
+type Msg
+  = Input String
+  | Send
+  | NewMessage String
+
+
+type alias Person =
+    { name : String
+    -- , age : Int
+    -- , profession : Maybe String
+    }
 
 
 init : (Model, Cmd Msg)
@@ -33,11 +47,21 @@ init =
 
 
 -- UPDATE
-type Msg
-  = Input String
-  | Send
-  | NewMessage String
 
+person : Decoder Person
+person =
+    object1 Person
+      ("name" := string)
+
+nullPerson : Person
+nullPerson =
+  { name = "I have no nome" }
+
+decode : String -> Person
+decode str =
+  case decodeString person str of
+    Ok val -> val
+    Err message -> nullPerson
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg {input, messages} =
@@ -49,7 +73,7 @@ update msg {input, messages} =
       (Model "" messages, WebSocket.send echoServer input)
 
     NewMessage str ->
-      (Model input (str :: messages), Cmd.none)
+      (Model input (decode(str) :: messages), Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -69,6 +93,6 @@ view model =
     ]
 
 
-viewMessage : String -> Html msg
+viewMessage : Person -> Html msg
 viewMessage msg =
-  div [] [ text msg ]
+  div [] [ text msg.name ]
