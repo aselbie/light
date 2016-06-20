@@ -1,12 +1,12 @@
 {
-  "name": "elm-webpack-starter",
-  "description": "Webpack setup for writing Elm apps",
-  "version": "0.6.1",
+  "name": "light",
+  "description": "A game that may one day be fun",
+  "version": "0.0.0",
   "license": "MIT",
-  "author": "Peter Morawiec",
+  "author": "Andrew Selbie",
   "repository": {
     "type": "git",
-    "url": "https://github.com/moarwick/elm-webpack-starter"
+    "url": "https://github.com/aselbie/light"
   },
   "scripts": {
     "start": "pm2 start process.json",
