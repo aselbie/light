@@ -31,5 +31,5 @@ decodeTiles str =
 
 
 handleMessage : String -> Model -> (Model, Cmd Msg)
-handleMessage str {input, tiles} =
-  (Model input (decodeTiles(str)), Cmd.none)
+handleMessage str model =
+  ({ model | tiles = decodeTiles(str) }, Cmd.none)
